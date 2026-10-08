@@ -102,3 +102,140 @@ found to any state is the cheapest. When a heuristic is inconsistent, the algori
 suboptimal path. Without reopening capabilities, these suboptimal path assignments become permanent. Reopening rescues
 the search by allowing the algorithm to dynamically correct these early errors. It intercepts cheaper pathways to closed
 states, restores them to the frontier, and forces the true optimal path to emerge.
+
+## Part B: Constraint satisfaction
+
+### B1
+
+- **Variables:** $V = \{A, B, C, D\}$
+- **Initial Domains:**
+    - $D (A) = \{1, 2\}$
+    - $D (B) = \{2, 3\}$
+    - $D (C) = \{1, 2, 3\}$
+    - $D (D) = \{3, 4\}$
+
+| Variable | Domain  | Precedence Constraints | Exclusive-Rig Constraints |
+|:--------:|:-------:|:----------------------:|:-------------------------:|
+|   $A$    |  {1,2}  |        $A < B$         | $A ≠ B$, $A ≠ C$, $A ≠ D$ |
+|   $B$    |  {2,3}  |                        |     $B ≠ C$, $B ≠ D$      |
+|   $C$    | {1,2,3} |        $C < D$         |          $C ≠ D$          |
+|   $D$    |  {3,4}  |                        |                           |
+
+![b1.svg](b1.svg "Binary Constraint Graph")
+
+### B2
+
+| Variable | MRV | Degree |
+|:--------:|:---:|:------:|
+|   $A$    |  2  |   3    |
+|   $B$    |  2  |   3    |
+|   $C$    |  3  |   3    |
+|   $D$    |  2  |   3    |
+
+Variables $A$, $B$, and $D$ tie for the MRV of 2. All variables have the same degree of 3. Therefore, we are forced to
+choose alphabetically, and we select $A$ as the first variable to assign.
+
+| Value Choice | Removed from B | Removed from C | Removed from D | Total Removed |
+|:------------:|:--------------:|:--------------:|:--------------:|:-------------:|
+|      1       |       0        |       1        |       0        |       1       |
+|      2       |       1        |       1        |       0        |       2       |
+
+$A = 1$ removes 1 value from the domains of other variables, while $A = 2$ removes 2 values. Therefore, we
+select $A = 1$ as the Least Constraining Value.
+
+| Variable | Domain | MRV | Degree |
+|:--------:|:------:|:---:|:------:|
+|   $A$    |  {1}   |  -  |   -    |
+|   $B$    | {2,3}  |  2  |   2    |
+|   $C$    | {2,3}  |  2  |   2    |
+|   $D$    | {3,4}  |  2  |   2    |
+
+Variables $B$, $C$, and $D$ tie for the MRV of 2. All variables have the same degree of 2. Therefore, we are forced to
+choose alphabetically, and we select $B$ as the next variable to assign.
+
+| Value Choice | Removed from C | Removed from D | Total Removed |
+|:------------:|:--------------:|:--------------:|:-------------:|
+|      2       |       1        |       0        |       1       |
+|      3       |       1        |       1        |       2       |
+
+$B = 2$ removes 1 value from the domains of other variables, while $B = 3$ removes 2 values. Therefore, we
+select $B = 2$ as the Least Constraining Value.
+
+| Variable | Domain | MRV | Degree |
+|:--------:|:------:|:---:|:------:|
+|   $A$    |  {1}   |  -  |   -    |
+|   $B$    |  {2}   |  -  |   -    |
+|   $C$    |  {3}   |  1  |   1    |
+|   $D$    | {3,4}  |  2  |   1    |
+
+Variable $C$ has the MRV of 1, so we select $C$ as the next variable to assign. $C$ has only one value in its domain, so
+we assign $C = 3$, leaving $D$ with a domain of $\{4\}$, which correctly satisfies the precedence constraint $C < D$.
+Therefore, we assign $D = 4$.
+
+**First Solution:** $$A = 1, \quad B = 2, \quad C = 3, \quad D = 4$$
+
+### B3
+
+Because $A < B$ and their combined allowable domains are limited to slots 1–3, there are only three mathematically
+possible combinations for the tuple $(A, B)$: $\{ (1,2), (1,3), (2,3)\}$.
+
+Furthermore, because there are only 4 total unique slots, and any valid pair of $(A, B)$ combined with $C$'s domain
+restrictions will always consume slots 1, 2, and 3, $D$ is structurally forced to always equal 4 across all branches.
+
+Evaluating the three unique $(A, B)$ pairings against the remaining unassigned slots confirms that each choice leaves
+exactly one valid value for $C$:
+
+* If $(A, B) = (1, 2) \implies C = 3$
+* If $(A, B) = (1, 3) \implies C = 2$
+* If $(A, B) = (2, 3) \implies C = 1$
+
+Because every valid core combination of the precedence variables $(A, B)$ was tested, and each uniquely locked in the
+remaining values, this proof completely exhausts the problem's search space.
+
+This means, in $(A, B, C, D)$ order, the three unique solutions are:
+
+1. $(1, 2, 3, 4)$
+2. $(1, 3, 2, 4)$
+3. $(2, 3, 1, 4)$
+
+### B4
+
+Evaluating consistency across all edges before any assignment:
+
+- For $X \neq Y$: Both values in $X$ have satisfying matches in $Y$ ($X=1 \to Y=2$; $X=2 \to Y=1$).
+- For $X \neq Z$: Both values in $X$ have satisfying matches in $Z$ ($X=1 \to Z=2$; $X=2 \to Z=1$).
+- For $Y \neq Z$: Both values in $Y$ have satisfying matches in $Z$ ($Y=1 \to Z=2$; $Y=2 \to Z=1$).
+
+Resulting Domains:
+
+- $X = \{1, 2\}$
+- $Y = \{1, 2\}$
+- $Z = \{1, 2\}$
+
+According to the pigeonhole principle, three variables cannot be assigned two unique values without at least one value
+being repeated. Therefore, the CSP has no solution and is globally infeasible.
+
+Sett $X = 1$. Forward checking applies $X \neq Y$ and $X \neq Z$ to filter $X$'s unassigned neighbors, removing $1$
+from both domains.
+
+| Variable | Domain | MRV | Degree |
+|:--------:|:------:|:---:|:------:|
+|   $X$    |  {1}   |  -  |   -    |
+|   $Y$    |  {2}   |  1  |   1    |
+|   $Z$    |  {2}   |  1  |   1    |
+
+Variables $Y$, and $Z$ tie for the MRV of 1. All variables have the same degree of 1. Breaking the tie alphabetically
+selects $Y$ as the next variable to assign.
+
+Set **$Y = 2$**. Forward checking applies $Y \neq Z$ to filter the remaining unassigned neighbor $Z$, removing $2$ from
+its domain.
+
+| Variable | Domain | MRV | Degree |
+|:--------:|:------:|:---:|:------:|
+|   $X$    |  {1}   |  -  |   -    |
+|   $Y$    |  {2}   |  -  |   -    |
+|   $Z$    |   {}   |  0  |   0    |
+
+Even if a graph is arc-consistent, it is not guaranteed that it will be globally feasible. This is because arc
+consistency is only ever checking 2 variables at the same time. It checks constraints locally between individual pairs,
+meaning it is blind to global, higher-order dead-ends like the Pigeonhole Principle constraint exposed in this problem.

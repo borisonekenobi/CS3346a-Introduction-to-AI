@@ -1,0 +1,18 @@
+graph {
+    layout=neato;
+    node [shape=circle, width=0.5, fixedsize=true];
+    edge [fontsize=10];
+
+    A [pos="0,2!"];
+    B [pos="2,2!"];
+    C [pos="0,0!"];
+    D [pos="2,0!"];
+
+    A -- B [label="&ne;, A < B"];
+    C -- D [label="&ne;, C < D"];
+
+    A -- C [label="&ne;"];
+    A -- D [label="&ne;"];
+    B -- C [label="&ne;"];
+    B -- D [label="&ne;"];
+}
