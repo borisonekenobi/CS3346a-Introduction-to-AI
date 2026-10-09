@@ -365,3 +365,25 @@ Conversely, expectimax calculates weighted averages, making it sensitive to the 
 between utilities. Squaring values stretches larger utilities disproportionately, altering the agent's risk attitude to
 become risk-seeking, which can flip preferences. The class of transforms guaranteed to preserve expected-utility
 preferences is Positive Linear Transformations of the form $f (u) = m \cdot u + c$, where $m > 0$.
+
+## Part D: Python Implementation
+
+### D1
+
+*Check Python implementation for minimax in [student_search.py](student_search.py)*
+
+### D2
+
+*Check Python implementation for expectimax in [student_search.py](student_search.py)*
+
+### D3
+
+The left-to-right alpha-beta pass evaluated 10 leaves, pruning two (M2a, M2b), while the right-to-left pass evaluated 9
+leaves, pruning three (R1a, M1a, M1b). Right-to-left achieved higher efficiency because expanding rightward branches
+first uncovered the optimal tree value (9.0) immediately, establishing tighter initial bounds that forced more
+aggressive pruning across the remaining subtrees. The expectimax root value (11.8) cannot serve as a pruning-correctness
+comparison against minimax because expectimax operates under an entirely different game-theoretic paradigm. Minimax
+assumes a strictly rational, minimizing adversary, whereas expectimax models a stochastic environment moving based on
+random probabilities, structurally changing node calculations and preventing any branch pruning (evaluating all 12
+leaves). All experimental values, leaf counts, and evaluation sequences match my written calculations perfectly with
+zero discrepancies.

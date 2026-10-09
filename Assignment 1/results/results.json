@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Alpha-beta LTR",
+    "root_value": 9.0,
+    "evaluated_leaves": 10,
+    "leaf_order": [
+      "L1a",
+      "L1b",
+      "L2a",
+      "L2b",
+      "M1a",
+      "M1b",
+      "R1a",
+      "R1b",
+      "R2a",
+      "R2b"
+    ]
+  },
+  {
+    "name": "Alpha-beta RTL",
+    "root_value": 9.0,
+    "evaluated_leaves": 9,
+    "leaf_order": [
+      "R2b",
+      "R2a",
+      "R1b",
+      "M2b",
+      "M2a",
+      "L2b",
+      "L2a",
+      "L1b",
+      "L1a"
+    ]
+  },
+  {
+    "name": "Expectimax",
+    "root_value": 11.8,
+    "evaluated_leaves": 12,
+    "leaf_order": [
+      "L1a",
+      "L1b",
+      "L2a",
+      "L2b",
+      "M1a",
+      "M1b",
+      "M2a",
+      "M2b",
+      "R1a",
+      "R1b",
+      "R2a",
+      "R2b"
+    ]
+  }
+]

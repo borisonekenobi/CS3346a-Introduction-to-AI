@@ -1,6 +1,6 @@
-"""Complete ONLY the two TODO regions. Python 3.10+; standard library only."""
 from math import inf
 from game_tree import record_leaf
+
 
 def alpha_beta(node, alpha=-inf, beta=inf, reverse=False, visited=None):
     """Return a fail-soft value, pruning when alpha >= beta.
@@ -15,10 +15,25 @@ def alpha_beta(node, alpha=-inf, beta=inf, reverse=False, visited=None):
     if node.kind not in ('MAX', 'MIN'):
         raise ValueError('alpha_beta accepts only MAX/MIN/LEAF trees')
     children = node.children[::-1] if reverse else node.children
-    # TODO 1: MAX/MIN recursion; pass the current window and visited list.
-    # Update alpha or beta, stop on alpha >= beta, and return the best value
-    # observed (fail-soft). Do not call expectimax or inspect unvisited leaves.
-    raise NotImplementedError('Complete alpha_beta in student_search.py')
+    if node.kind == 'MAX':
+        best_val = -inf
+        for child in children:
+            child_val = alpha_beta(child, alpha, beta, reverse, visited)
+            best_val = max(best_val, child_val)
+            alpha = max(alpha, best_val)
+            if alpha >= beta:
+                break
+        return best_val
+    else:
+        best_val = inf
+        for child in children:
+            child_val = alpha_beta(child, alpha, beta, reverse, visited)
+            best_val = min(best_val, child_val)
+            beta = min(beta, best_val)
+            if alpha >= beta:
+                break
+        return best_val
+
 
 def expectimax(node, visited=None):
     """Return exact expected utility in a finite MAX/CHANCE/LEAF tree.
@@ -31,6 +46,16 @@ def expectimax(node, visited=None):
         return record_leaf(node, visited)
     if node.kind not in ('MAX', 'CHANCE'):
         raise ValueError('expectimax accepts only MAX/CHANCE/LEAF trees')
-    # TODO 2: MAX recursion or the probability-weighted sum at CHANCE.
-    # Preserve supplied order and record leaves through recursive calls.
-    raise NotImplementedError('Complete expectimax in student_search.py')
+
+    if node.kind == 'MAX':
+        children = []
+        for child in node.children: children.append(expectimax(child, visited))
+        return max(children)
+    elif node.kind == 'CHANCE':
+        expected_value = 0.0
+        for child, p in zip(node.children, node.probabilities):
+            child_val = expectimax(child, visited)
+            expected_value += p * child_val
+        return expected_value
+    else:
+        raise ValueError('expectimax accepts only MAX/CHANCE/LEAF trees')
