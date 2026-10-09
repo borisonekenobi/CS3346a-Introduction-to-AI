@@ -202,9 +202,9 @@ This means, in $(A, B, C, D)$ order, the three unique solutions are:
 
 Evaluating consistency across all edges before any assignment:
 
-- For $X \neq Y$: Both values in $X$ have satisfying matches in $Y$ ($X=1 \to Y=2$; $X=2 \to Y=1$).
-- For $X \neq Z$: Both values in $X$ have satisfying matches in $Z$ ($X=1 \to Z=2$; $X=2 \to Z=1$).
-- For $Y \neq Z$: Both values in $Y$ have satisfying matches in $Z$ ($Y=1 \to Z=2$; $Y=2 \to Z=1$).
+- For $X ≠ Y$: Both values in $X$ have satisfying matches in $Y$ ($X=1 \to Y=2$; $X=2 \to Y=1$).
+- For $X ≠ Z$: Both values in $X$ have satisfying matches in $Z$ ($X=1 \to Z=2$; $X=2 \to Z=1$).
+- For $Y ≠ Z$: Both values in $Y$ have satisfying matches in $Z$ ($Y=1 \to Z=2$; $Y=2 \to Z=1$).
 
 Resulting Domains:
 
@@ -215,7 +215,7 @@ Resulting Domains:
 According to the pigeonhole principle, three variables cannot be assigned two unique values without at least one value
 being repeated. Therefore, the CSP has no solution and is globally infeasible.
 
-Sett $X = 1$. Forward checking applies $X \neq Y$ and $X \neq Z$ to filter $X$'s unassigned neighbors, removing $1$
+Sett $X = 1$. Forward checking applies $X ≠ Y$ and $X ≠ Z$ to filter $X$'s unassigned neighbors, removing $1$
 from both domains.
 
 | Variable | Domain | MRV | Degree |
@@ -227,7 +227,7 @@ from both domains.
 Variables $Y$, and $Z$ tie for the MRV of 1. All variables have the same degree of 1. Breaking the tie alphabetically
 selects $Y$ as the next variable to assign.
 
-Set **$Y = 2$**. Forward checking applies $Y \neq Z$ to filter the remaining unassigned neighbor $Z$, removing $2$ from
+Set $Y = 2$. Forward checking applies $Y ≠ Z$ to filter the remaining unassigned neighbor $Z$, removing $2$ from
 its domain.
 
 | Variable | Domain | MRV | Degree |
