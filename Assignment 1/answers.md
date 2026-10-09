@@ -239,3 +239,129 @@ its domain.
 Even if a graph is arc-consistent, it is not guaranteed that it will be globally feasible. This is because arc
 consistency is only ever checking 2 variables at the same time. It checks constraints locally between individual pairs,
 meaning it is blind to global, higher-order dead-ends like the Pigeonhole Principle constraint exposed in this problem.
+
+## Part C: Game data and pruning
+
+### C1
+
+MAX Nodes:
+
+- $L1 = \text{max} (4, 7) = 7$
+- $L2 = \text{max} (3, 15) = 15$
+- $M1 = \text{max} (2, 6) = 6$
+- $M2 = \text{max} (9, 5) = 9$
+- $R1 = \text{max} (1, 10) = 10$
+- $R2 = \text{max} (8, 9) = 9$
+
+MIN Nodes:
+
+- $L = \text{min} (7, 15) = 7$
+- $M = \text{min} (6, 9) = 6$
+- $R = \text{min} (10, 9) = 9$
+
+$Root = \text{max} (7, 6, 9) = 9$
+
+The optimal move is R, resulting in a final value of 9.
+
+### C2
+
+Left-to-right tracking order:
+
+| Node | Child | Incoming Window | Returned Value | Current Best | Updated Window | Cutoff Occurs? |
+|:----:|:-----:|:---------------:|:--------------:|:------------:|:--------------:|:---------------|
+|  L1  |  L1a  |    $(-∞, ∞)$    |       4        |      4       |    $[4, ∞)$    | No             |
+|  L1  |  L1b  |    $[4, ∞)$     |       7        |      7       |    $[7, ∞)$    | No             |
+|  L   |  L1   |    $(-∞, ∞)$    |       7        |      7       |   $(-∞, 7]$    | No             |
+|  L2  |  L2a  |    $(-∞, 7]$    |       3        |      3       |    $[3, 7]$    | No             |
+|  L2  |  L2b  |    $[3, 7]$     |       15       |      15      |   $[15, 7]$    | Yes            |
+|  L   |  L2   |    $(-∞, 7]$    |       15       |      7       |   $(-∞, 7]$    | No             |
+| Root |   L   |    $(-∞, ∞)$    |       7        |      7       |    $[7, ∞)$    | No             |
+|  M1  |  M1a  |    $[7, ∞)$     |       2        |      2       |    $[7, ∞)$    | No             |
+|  M1  |  M1b  |    $[7, ∞)$     |       6        |      6       |    $[7, ∞)$    | No             |
+|  M   |  M1   |    $[7, ∞)$     |       6        |      6       |    $[7, 6]$    | Yes            |
+| Root |   M   |    $[7, ∞)$     |       6        |      7       |    $[7, ∞)$    | No             |
+|  R1  |  R1a  |    $[7, ∞)$     |       1        |      1       |    $[7, ∞)$    | No             |
+|  R1  |  R1b  |    $[7, ∞)$     |       10       |      10      |   $[10, ∞)$    | No             |
+|  R   |  R1   |    $[7, ∞)$     |       10       |      10      |   $[7, 10]$    | No             |
+|  R2  |  R2a  |    $[7, 10]$    |       8        |      8       |   $[8, 10]$    | No             |
+|  R2  |  R2b  |    $[8, 10]$    |       9        |      9       |   $[9, 10]$    | No             |
+|  R   |  R2   |    $[7, 10]$    |       9        |      9       |    $[7, 9]$    | No             |
+| Root |   R   |    $[7, ∞)$     |       9        |      9       |    $[9, ∞)$    | No             |
+
+- Evaluated Leaves: `L1a`, `L1b`, `L2a`, `L2b`, `M1a`, `M1b`, `R1a`, `R1b`, `R2a`, `R2b`
+- Pruned Leaves: `M2a`, `M2b`
+
+Right-to-left tracking order:
+
+| Node | Child | Incoming Window | Returned Value | Current Best | Updated Window | Cutoff Occurs? |
+|:----:|:-----:|:---------------:|:--------------:|:------------:|:--------------:|:---------------|
+|  R2  |  R2b  |    $(-∞, ∞)$    |       9        |      9       |    $[9, ∞)$    | No             |
+|  R2  |  R2a  |    $[9, ∞)$     |       8        |      9       |    $[9, ∞)$    | No             |
+|  R   |  R2   |    $(-∞, ∞)$    |       9        |      9       |   $(-∞, 9]$    | No             |
+|  R1  |  R1b  |    $(-∞, 9]$    |       10       |      10      |   $[10, 9]$    | Yes            |
+|  R   |  R1   |    $(-∞, 9]$    |       10       |      9       |   $(-∞, 9]$    | No             |
+| Root |   R   |    $(-∞, ∞)$    |       9        |      9       |    $[9, ∞)$    | No             |
+|  M2  |  M2b  |    $[9, ∞)$     |       5        |      5       |    $[9, ∞)$    | No             |
+|  M2  |  M2a  |    $[9, ∞)$     |       9        |      9       |    $[9, ∞)$    | No             |
+|  M   |  M2   |    $[9, ∞)$     |       9        |      9       |    $[9, 9]$    | Yes            |
+| Root |   M   |    $[9, ∞)$     |       9        |      9       |    $[9, ∞)$    | No             |
+|  L2  |  L2b  |    $[9, ∞)$     |       15       |      15      |   $[15, ∞)$    | No             |
+|  L2  |  L2a  |    $[15, ∞)$    |       3        |      15      |   $[15, ∞)$    | No             |
+|  L   |  L2   |    $[9, ∞)$     |       15       |      15      |   $[9, 15]$    | No             |
+|  L1  |  L1b  |    $[9, 15]$    |       7        |      7       |   $[9, 15]$    | No             |
+|  L1  |  L1a  |    $[9, 15]$    |       4        |      7       |   $[9, 15]$    | No             |
+|  L   |  L1   |    $[9, 15]$    |       7        |      7       |    $[9, 7]$    | Yes            |
+| Root |   L   |    $[9, ∞)$     |       7        |      9       |    $[9, ∞)$    | No             |
+
+- Evaluated Leaves: `R2b`, `R2a`, `R1b`, `M2b`, `M2a`, `L2b`, `L2a`, `L1b`, `L1a`
+- Pruned Leaves: `R1a`, `M1a`, `M1b`
+
+Alpha-beta pruning guarantees the exact same root minimax value because it only eliminates subtrees that a rational
+opponent would never allow or that the maximizing agent would never choose. By discarding these mathematically
+irrelevant paths, the optimal outcome remains unchanged.
+
+In a fail-soft framework, a cutoff return may only represent a bound because the algorithm halts exploration the moment
+a threshold is crossed. Because the remaining sister nodes are pruned, we do not inspect their values. The returned
+number is merely the best score observed so far, acting as a guaranteed lower bound (α-cutoff) or upper bound (β-cutoff)
+rather than the precise, exact minimax value of that unsearched subtree.
+
+### C3
+
+CHANCE Nodes:
+
+- $L = (0.40 × 7) + (0.60 × 15) = 11.8$
+- $M = (0.25 × 6) + (0.75 × 9) = 8.25$
+- $R = (0.80 × 10) + (0.20 × 9) = 9.8$
+
+$Root = \text{max} (11.8, 8.25, 9.8) = 11.8$
+
+The optimal move is L.
+
+The underlying assumption changed from facing a perfectly rational, adversarial opponent to playing against a stochastic
+environment that moves randomly according to fixed probabilities. Because of this change, the optimal move switches from
+R to L. The core risk of using this probabilistic model against a true adversarial opponent is that an adversary will
+not play randomly. If MAX chooses L expecting an average of 11.8, a malicious opponent will actively choose L1 to force
+the lower payoff of 7, completely invalidating the expected utility calculation.
+
+### C4
+
+$\text{EU} (\text{Safe}) = 6 × 100\% = 6$
+
+$\text{EU} (\text{Risky}) = (0 × 50\%) + (10 × 50\%) = 5$
+
+The expected utility of the Safe option is 6, while the expected utility of the Risky option is 5. Therefore, the Safe
+option is the rational choice because it maximizes expected utility.
+
+$\text{EU} (\text{Safe}) = 6^2 × 100\% = 36$
+
+$\text{EU} (\text{Risky}) = (0^2 × 50\%) + (10^2 × 50\%) = 50$
+
+The expected utility of the Safe option is 36, while the expected utility of the Risky option is 50. Therefore, the
+Risky option is the rational choice because it maximizes expected utility.
+
+Deterministic minimax only relies on the relative ordering of outcomes. Because $f (u) = u^2$ is a strictly increasing
+function on the non-negative domain, it preserves all inequalities. Therefore, the same paths remain optimal.
+Conversely, expectimax calculates weighted averages, making it sensitive to the relative magnitudes and intervals
+between utilities. Squaring values stretches larger utilities disproportionately, altering the agent's risk attitude to
+become risk-seeking, which can flip preferences. The class of transforms guaranteed to preserve expected-utility
+preferences is Positive Linear Transformations of the form $f (u) = m \cdot u + c$, where $m > 0$.
