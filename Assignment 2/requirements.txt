@@ -1,0 +1,1 @@
+# Standard library only. Python 3.10 or later. No pip install needed.
