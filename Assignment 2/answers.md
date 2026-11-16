@@ -537,3 +537,19 @@ $\boxed{Q_{\text{new}}(s, a) = 0.375}$
 | Updated $w_1$   |  $-0.15$ |
 | Updated $w_2$   | $-0.675$ |
 | New prediction  |  $0.375$ |
+
+## Problem 3 Answers
+
+### 3C
+
+| Living Reward | Start value | Greedy action at start | Sweeps |
+|---------------|------------:|------------------------|-------:|
+| $-0.1$        |     $0.553$ | Up                     |     23 |
+| $+0.5$        |     $3.333$ | Down                   |     77 |
+
+Changing the living reward significantly changes the agent's behaviour. With a living reward of $-0.1$, each step has a
+small penalty, so the agent is encouraged to reach the goal and collect its positive terminal reward. The resulting
+greedy action at the start is Up. With a living reward of $+0.5$, the agent receives a positive reward for every step it
+remains active. This encourages it to avoid terminal states and continue collecting rewards instead of reaching the
+goal. The discounted value of receiving $0.5$ forever is approximately $0.5 / (1 - 0.85) = 3.333$, which exceeds the
+goal reward of $3$. This demonstrates that maximizing expected reward does not always mean reaching the intended goal.
